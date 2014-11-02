@@ -19,7 +19,7 @@ def _get_nacl():
     # Import libsodium
     if sys.platform.startswith('win'):
         try:
-            return ctypes.cdll.LoadLibrary('libsodium')
+            return ctypes.cdll.LoadLibrary('libsodium-vc90-mt-x86')
         except OSError:
             pass
         for soname_ver in __SONAMES:

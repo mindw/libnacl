@@ -14,7 +14,9 @@
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath('..'))
+
+import libnacl
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -53,7 +55,7 @@ copyright = u'2014, Thomas S Hatch'
 # built documents.
 #
 # The short X.Y version.
-version = '1.4.1'
+version = libnacl.__version__
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -178,7 +180,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'libnacldoc'
+htmlhelp_basename = 'libnacl'
 
 
 # -- Options for LaTeX output ---------------------------------------------

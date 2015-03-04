@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Wrap libsodium routines
-'''
+"""
 # pylint: disable=C0103
 # Import libnacl libs
 from libnacl.version import __version__
@@ -13,9 +13,9 @@ __SONAMES = (13, 10, 5, 4)
 
 
 def _get_nacl():
-    '''
+    """
     Locate the nacl c libs to use
-    '''
+    """
     # Import libsodium
     if sys.platform.startswith('win'):
         try:
@@ -112,21 +112,33 @@ crypto_hash_sha512_BYTES = nacl.crypto_hash_sha512_bytes()
 # pylint: enable=C0103
 
 
+class CryptoGenericHashState(ctypes.Structure):
+    _pack_ = 1
+    _fields_ = [
+        ('h', ctypes.c_uint64 * 8),
+        ('t', ctypes.c_uint64 * 2),
+        ('f', ctypes.c_uint64 * 2),
+        ('buf', ctypes.c_uint8 * 2 * 128),
+        ('buflen', ctypes.c_size_t),
+        ('last_node', ctypes.c_uint8)
+    ]
+
+
 # Define exceptions
 class CryptError(Exception):
-    '''
+    """
     Base Exception for cryptographic errors
-    '''
+    """
 
 # Pubkey defs
 
 
 def crypto_box_keypair():
-    '''
+    """
     Generate and return a new keypair
 
     pk, sk = nacl.crypto_box_keypair()
-    '''
+    """
     pk = ctypes.create_string_buffer(crypto_box_PUBLICKEYBYTES)
     sk = ctypes.create_string_buffer(crypto_box_SECRETKEYBYTES)
     nacl.crypto_box_keypair(pk, sk)
@@ -134,12 +146,12 @@ def crypto_box_keypair():
 
 
 def crypto_box(msg, nonce, pk, sk):
-    '''
+    """
     Using a public key and a secret key encrypt the given message. A nonce
     must also be passed in, never reuse the nonce
 
     enc_msg = nacl.crypto_box('secret message', <unique nonce>, <public key string>, <secret key string>)
-    '''
+    """
     if len(pk) != crypto_box_PUBLICKEYBYTES:
         raise ValueError('Invalid public key')
     if len(sk) != crypto_box_SECRETKEYBYTES:
@@ -155,9 +167,9 @@ def crypto_box(msg, nonce, pk, sk):
 
 
 def crypto_box_open(ctxt, nonce, pk, sk):
-    '''
+    """
     Decrypts a message given the receivers private key, and senders public key
-    '''
+    """
     if len(pk) != crypto_box_PUBLICKEYBYTES:
         raise ValueError('Invalid public key')
     if len(sk) != crypto_box_SECRETKEYBYTES:

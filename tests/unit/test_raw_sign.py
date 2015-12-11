@@ -7,9 +7,9 @@ import unittest
 
 
 class TestSign(unittest.TestCase):
-    '''
+    """
     Test sign functions
-    '''
+    """
     def test_gen(self):
         vk1, sk1 = libnacl.crypto_sign_keypair()
         vk2, sk2 = libnacl.crypto_sign_keypair()

@@ -1,10 +1,10 @@
-'''
+"""
 Mimic very closely the python hashlib classes for blake2b
 
 NOTE:
     This class does not yet implement streaming the msg into the
     hash function via the update method
-'''
+"""
 
 # Import python libs
 import binascii

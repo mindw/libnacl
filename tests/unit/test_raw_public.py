@@ -7,9 +7,9 @@ import unittest
 
 
 class TestPublic(unittest.TestCase):
-    '''
+    """
     Test public functions
-    '''
+    """
     def test_gen(self):
         pk1, sk1 = libnacl.crypto_box_keypair()
         pk2, sk2 = libnacl.crypto_box_keypair()

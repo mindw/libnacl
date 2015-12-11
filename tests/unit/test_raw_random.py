@@ -19,7 +19,7 @@ class TestRandomBytes(unittest.TestCase):
         self.assertTrue(all(freq.values()))
 
     def test_randombytes(self):
-        'copied from libsodium default/randombytes.c'
+        """copied from libsodium default/randombytes.c"""
 
         data = libnacl.randombytes(65536)
 

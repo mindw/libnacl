@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Implement the base key object for other keys to inherit convenience functions
-'''
+"""
 # Import libnacl libs
 import libnacl.encode
 
 # Import python libs
 import os
 import stat
+
 
 class BaseKey(object):
     '''

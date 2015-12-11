@@ -6,9 +6,9 @@ import unittest
 
 
 class TestGenericHash(unittest.TestCase):
-    '''
+    """
     Test sign functions
-    '''
+    """
     def test_keyless_generichash(self):
         msg1 = b'Are you suggesting coconuts migrate?'
         msg2 = b'Not at all, they could be carried.'

@@ -7,9 +7,9 @@ import unittest
 
 
 class TestSecretBox(unittest.TestCase):
-    '''
+    """
     Test sign functions
-    '''
+    """
     def test_secret_box(self):
         msg = b'Are you suggesting coconuts migrate?'
         sk1 = libnacl.utils.salsa_key()

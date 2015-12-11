@@ -6,8 +6,8 @@ import unittest
 
 
 class TestSigning(unittest.TestCase):
-    '''
-    '''
+    """
+    """
     def test_sign(self):
         msg = (b'Well, that\'s no ordinary rabbit.  That\'s the most foul, '
                b'cruel, and bad-tempered rodent you ever set eyes on.')
@@ -20,4 +20,3 @@ class TestSigning(unittest.TestCase):
         verified2 = veri.verify(signature + msg)
         self.assertEqual(verified, msg)
         self.assertEqual(verified2, msg)
-

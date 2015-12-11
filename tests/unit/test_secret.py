@@ -3,9 +3,10 @@ import libnacl.secret
 # Import python libs
 import unittest
 
+
 class TestSecret(unittest.TestCase):
-    '''
-    '''
+    """
+    """
     def test_secret(self):
         msg = b'But then of course African swallows are not migratory.'
         box = libnacl.secret.SecretBox()
@@ -19,4 +20,3 @@ class TestSecret(unittest.TestCase):
         ctxt2 = box2.encrypt(msg)
         clear3 = box.decrypt(ctxt2)
         self.assertEqual(clear3, msg)
-

@@ -7,9 +7,9 @@ import unittest
 
 
 class TestAuthVerify(unittest.TestCase):
-    '''
+    """
     Test onetimeauth functions
-    '''
+    """
     def test_auth_verify(self):
         msg = b'Anybody can invent a cryptosystem he cannot break himself. Except Bruce Schneier.'
         key1 = libnacl.utils.salsa_key()

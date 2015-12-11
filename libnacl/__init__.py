@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Wrap libsodium routines
-'''
+"""
 # pylint: disable=C0103
-# Import libnacl libs
-from libnacl.version import __version__
-# Import python libs
+from .version import __version__
+
 import ctypes
 import sys
 import os
@@ -14,9 +13,9 @@ __SONAMES = (18, 17, 13, 10, 5, 4)
 
 
 def _get_nacl():
-    '''
+    """
     Locate the nacl c libs to use
-    '''
+    """
     # Import libsodium
     if sys.platform.startswith('win'):
         try:
@@ -139,11 +138,11 @@ crypto_verify_64_BYTES = nacl.crypto_verify_64_bytes()
 
 
 def crypto_box_keypair():
-    '''
+    """
     Generate and return a new keypair
 
     pk, sk = nacl.crypto_box_keypair()
-    '''
+    """
     pk = ctypes.create_string_buffer(crypto_box_PUBLICKEYBYTES)
     sk = ctypes.create_string_buffer(crypto_box_SECRETKEYBYTES)
     nacl.crypto_box_keypair(pk, sk)
@@ -151,18 +150,19 @@ def crypto_box_keypair():
 
 
 def crypto_box(msg, nonce, pk, sk):
-    '''
+    """
     Using a public key and a secret key encrypt the given message. A nonce
     must also be passed in, never reuse the nonce
 
     enc_msg = nacl.crypto_box('secret message', <unique nonce>, <public key string>, <secret key string>)
-    '''
+    """
     if len(pk) != crypto_box_PUBLICKEYBYTES:
         raise ValueError('Invalid public key')
     if len(sk) != crypto_box_SECRETKEYBYTES:
         raise ValueError('Invalid secret key')
     if len(nonce) != crypto_box_NONCEBYTES:
         raise ValueError('Invalid nonce')
+
     pad = b'\x00' * crypto_box_ZEROBYTES + msg
     c = ctypes.create_string_buffer(len(pad))
     ret = nacl.crypto_box(c, pad, ctypes.c_ulonglong(len(pad)), nonce, pk, sk)
@@ -172,9 +172,9 @@ def crypto_box(msg, nonce, pk, sk):
 
 
 def crypto_box_open(ctxt, nonce, pk, sk):
-    '''
+    """
     Decrypts a message given the receivers private key, and senders public key
-    '''
+    """
     if len(pk) != crypto_box_PUBLICKEYBYTES:
         raise ValueError('Invalid public key')
     if len(sk) != crypto_box_SECRETKEYBYTES:
@@ -196,9 +196,10 @@ def crypto_box_open(ctxt, nonce, pk, sk):
 
 
 def crypto_box_beforenm(pk, sk):
-    '''
-    Partially performs the computation required for both encryption and decryption of data
-    '''
+    """
+    Partially performs the computation required for both encryption and
+    decryption of data
+    """
     if len(pk) != crypto_box_PUBLICKEYBYTES:
         raise ValueError('Invalid public key')
     if len(sk) != crypto_box_SECRETKEYBYTES:
@@ -211,9 +212,9 @@ def crypto_box_beforenm(pk, sk):
 
 
 def crypto_box_afternm(msg, nonce, k):
-    '''
+    """
     Encrypts a given a message, using partial computed data
-    '''
+    """
     if len(k) != crypto_box_BEFORENMBYTES:
         raise ValueError('Invalid shared key')
     if len(nonce) != crypto_box_NONCEBYTES:
@@ -227,9 +228,9 @@ def crypto_box_afternm(msg, nonce, k):
 
 
 def crypto_box_open_afternm(ctxt, nonce, k):
-    '''
+    """
     Decrypts a ciphertext ctxt given k
-    '''
+    """
     if len(k) != crypto_box_BEFORENMBYTES:
         raise ValueError('Invalid shared key')
     if len(nonce) != crypto_box_NONCEBYTES:
@@ -250,9 +251,9 @@ def crypto_box_open_afternm(ctxt, nonce, k):
 
 
 def crypto_sign_keypair():
-    '''
+    """
     Generates a signing/verification key pair
-    '''
+    """
     vk = ctypes.create_string_buffer(crypto_sign_PUBLICKEYBYTES)
     sk = ctypes.create_string_buffer(crypto_sign_SECRETKEYBYTES)
     ret = nacl.crypto_sign_keypair(vk, sk)
@@ -262,9 +263,9 @@ def crypto_sign_keypair():
 
 
 def crypto_sign(msg, sk):
-    '''
-    Sign the given message witht he given signing key
-    '''
+    """
+    Sign the given message with the given signing key
+    """
     sig = ctypes.create_string_buffer(len(msg) + crypto_sign_BYTES)
     slen = ctypes.pointer(ctypes.c_ulonglong())
     ret = nacl.crypto_sign(
@@ -279,9 +280,9 @@ def crypto_sign(msg, sk):
 
 
 def crypto_sign_seed_keypair(seed):
-    '''
+    """
     Computes and returns the secret adn verify keys from the given seed
-    '''
+    """
     if len(seed) != crypto_sign_SEEDBYTES:
         raise ValueError('Invalid Seed')
     sk = ctypes.create_string_buffer(crypto_sign_SECRETKEYBYTES)
@@ -290,13 +291,13 @@ def crypto_sign_seed_keypair(seed):
     ret = nacl.crypto_sign_seed_keypair(vk, sk, seed)
     if ret:
         raise CryptError('Failed to generate keypair from seed')
-    return (vk.raw, sk.raw)
+    return vk.raw, sk.raw
 
 
 def crypto_sign_open(sig, vk):
-    '''
+    """
     Verifies the signed message sig using the signer's verification key
-    '''
+    """
     msg = ctypes.create_string_buffer(len(sig))
     msglen = ctypes.c_ulonglong()
     msglenp = ctypes.pointer(msglen)
@@ -371,9 +372,9 @@ def crypto_secretbox_open(ctxt, nonce, key):
 
 
 def crypto_stream(slen, nonce, key):
-    '''
+    """
     Generates a stream using the given secret key and nonce
-    '''
+    """
     stream = ctypes.create_string_buffer(slen)
     ret = nacl.crypto_stream(stream, ctypes.c_ulonglong(slen), nonce, key)
     if ret:
@@ -382,13 +383,13 @@ def crypto_stream(slen, nonce, key):
 
 
 def crypto_stream_xor(msg, nonce, key):
-    '''
+    """
     Encrypts the given message using the given secret key and nonce
 
     The crypto_stream_xor function guarantees that the ciphertext is the
     plaintext (xor) the output of crypto_stream. Consequently
     crypto_stream_xor can also be used to decrypt
-    '''
+    """
     stream = ctypes.create_string_buffer(len(msg))
     ret = nacl.crypto_stream_xor(
             stream,
@@ -405,10 +406,10 @@ def crypto_stream_xor(msg, nonce, key):
 
 
 def crypto_auth(msg, key):
-    '''
+    """
     Constructs a one time authentication token for the given message msg
     using a given secret key
-    '''
+    """
     tok = ctypes.create_string_buffer(crypto_auth_BYTES)
     ret = nacl.crypto_auth(tok, msg, ctypes.c_ulonglong(len(msg)), key)
     if ret:
@@ -417,10 +418,10 @@ def crypto_auth(msg, key):
 
 
 def crypto_auth_verify(tok, msg, key):
-    '''
+    """
     Verifies that the given authentication token is correct for the given
     message and key
-    '''
+    """
     ret = nacl.crypto_auth_verify(tok, msg, ctypes.c_ulonglong(len(msg)), key)
     if ret:
         raise ValueError('Failed to auth msg')
@@ -499,27 +500,27 @@ def crypto_onetimeauth_verify(token, message, key):
 
 
 def crypto_hash(msg):
-    '''
+    """
     Compute a hash of the given message
-    '''
+    """
     hbuf = ctypes.create_string_buffer(crypto_hash_BYTES)
     nacl.crypto_hash(hbuf, msg, ctypes.c_ulonglong(len(msg)))
     return hbuf.raw
 
 
 def crypto_hash_sha256(msg):
-    '''
+    """
     Compute the sha256 hash of the given message
-    '''
+    """
     hbuf = ctypes.create_string_buffer(crypto_hash_sha256_BYTES)
     nacl.crypto_hash_sha256(hbuf, msg, ctypes.c_ulonglong(len(msg)))
     return hbuf.raw
 
 
 def crypto_hash_sha512(msg):
-    '''
+    """
     Compute the sha512 hash of the given message
-    '''
+    """
     hbuf = ctypes.create_string_buffer(crypto_hash_sha512_BYTES)
     nacl.crypto_hash_sha512(hbuf, msg, ctypes.c_ulonglong(len(msg)))
     return hbuf.raw
@@ -528,9 +529,9 @@ def crypto_hash_sha512(msg):
 
 
 def crypto_generichash(msg, key=None):
-    '''
+    """
     Compute the blake2 hash of the given message with a given key
-    '''
+    """
     hbuf = ctypes.create_string_buffer(crypto_generichash_BYTES)
     if key:
         key_len = len(key)
@@ -549,10 +550,10 @@ def crypto_generichash(msg, key=None):
 
 
 def crypto_scalarmult_base(n):
-    '''
+    """
     Computes and returns the scalar product of a standard group element and an
     integer "n".
-    '''
+    """
     buf = ctypes.create_string_buffer(crypto_scalarmult_BYTES)
     ret = nacl.crypto_scalarmult_base(buf, n)
     if ret:
@@ -563,7 +564,7 @@ def crypto_scalarmult_base(n):
 
 
 def crypto_verify_16(string1, string2):
-    '''
+    """
     Compares the first crypto_verify_16_BYTES of the given strings
 
     The time taken by the function is independent of the contents of string1
@@ -571,12 +572,12 @@ def crypto_verify_16(string1, string2):
     memcmp(string1,string2,16) takes time that is dependent on the longest
     matching prefix of string1 and string2. This often allows for easy
     timing attacks.
-    '''
+    """
     return not nacl.crypto_verify_16(string1, string2)
 
 
 def crypto_verify_32(string1, string2):
-    '''
+    """
     Compares the first crypto_verify_32_BYTES of the given strings
 
     The time taken by the function is independent of the contents of string1
@@ -584,12 +585,12 @@ def crypto_verify_32(string1, string2):
     memcmp(string1,string2,32) takes time that is dependent on the longest
     matching prefix of string1 and string2. This often allows for easy
     timing attacks.
-    '''
+    """
     return not nacl.crypto_verify_32(string1, string2)
 
 
 def crypto_verify_64(string1, string2):
-    '''
+    """
     Compares the first crypto_verify_64_BYTES of the given strings
 
     The time taken by the function is independent of the contents of string1
@@ -597,7 +598,7 @@ def crypto_verify_64(string1, string2):
     memcmp(string1,string2,64) takes time that is dependent on the longest
     matching prefix of string1 and string2. This often allows for easy
     timing attacks.
-    '''
+    """
     return not nacl.crypto_verify_64(string1, string2)
 
 
@@ -626,18 +627,18 @@ def bytes_eq(a, b):
 
 
 def randombytes(size):
-    '''
+    """
     Return a string of random bytes of the given size
-    '''
+    """
     buf = ctypes.create_string_buffer(size)
     nacl.randombytes(buf, ctypes.c_ulonglong(size))
     return buf.raw
 
 
 def randombytes_buf(size):
-    '''
+    """
     Return a string of random bytes of the given size
-    '''
+    """
     size = int(size)
     buf = ctypes.create_string_buffer(size)
     nacl.randombytes_buf(buf, size)
@@ -645,57 +646,57 @@ def randombytes_buf(size):
 
 
 def randombytes_close():
-    '''
+    """
     Close the file descriptor or the handle for the cryptographic service
     provider
-    '''
+    """
     nacl.randombytes_close()
 
 
 def randombytes_random():
-    '''
+    """
     Return a random 32-bit unsigned value
-    '''
+    """
     return nacl.randombytes_random()
 
 
 def randombytes_stir():
-    '''
+    """
     Generate a new key for the pseudorandom number generator
 
     The file descriptor for the entropy source is kept open, so that the
     generator can be reseeded even in a chroot() jail.
-    '''
+    """
     nacl.randombytes_stir()
 
 
 def randombytes_uniform(upper_bound):
-    '''
+    """
     Return a value between 0 and upper_bound using a uniform distribution
-    '''
+    """
     return nacl.randombytes_uniform(upper_bound)
 
 
 # Utility functions
 
 def sodium_library_version_major():
-    '''
+    """
     Return the major version number
-    '''
+    """
     return nacl.sodium_library_version_major()
 
 
 def sodium_library_version_minor():
-    '''
+    """
     Return the minor version number
-    '''
+    """
     return nacl.sodium_library_version_minor()
 
 
 def sodium_version_string():
-    '''
+    """
     Return the version string
-    '''
+    """
     func = nacl.sodium_version_string
     func.restype = ctypes.c_char_p
     return func()
